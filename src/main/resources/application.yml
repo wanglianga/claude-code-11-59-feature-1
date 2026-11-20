@@ -28,6 +28,17 @@ app:
     assumed-surcharge-m: 2.0       # 下游水位缺失时假设的出口壅水超高（米）
     alignment-tolerance-seconds: 600  # 校准样本时间对齐容差（流量/水位/降雨同一时刻判定）
 
+  defect-evolution:
+    # 候选连接最小里程重叠比例（按定位不确定度扩张后计算）
+    overlap-min-ratio: 0.10
+    # 长度量级合理性上限（两期长度跨度比值，大/小）；超过视为不同缺陷，拒绝连接。
+    # 仅作量级护栏——裂缝扩展会让长度区间不重叠，因此长度接近度只用于打分，不作硬门槛。
+    length-span-ratio-max: 5.0
+    # 次优与最优候选分差低于此值 → 保留歧义（不双计）
+    ambiguity-score-margin: 0.05
+    # 轨迹级扩张/收缩判定的最少连续覆盖年数
+    min-continuous-years: 0
+
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

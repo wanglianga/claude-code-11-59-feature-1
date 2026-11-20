@@ -58,4 +58,43 @@ public final class Vocab {
     public static final String REASON_NO_PARAM_VERSION = "NO_PARAMETER_VERSION_AT_AS_OF";
     public static final String REASON_GEOMETRY_MISSING = "GEOMETRY_MISSING";
     public static final String REASON_SLOPE_MISSING = "SLOPE_MISSING";
+
+    // ======================================================================
+    // 缺陷形态演化（V2）
+    // ======================================================================
+
+    // 缺陷类型（开放词表：裂缝 / 变形 / 渗漏 ...）
+    public static final String DEFECT_CRACK = "裂缝";
+    public static final String DEFECT_DEFORMATION = "变形";
+    public static final String DEFECT_LEAK = "渗漏";
+
+    // 轨迹变化状态
+    public static final String TRAJ_PERSISTENT = "PERSISTENT";               // 持续存在（无可支持的变化）
+    public static final String TRAJ_POSSIBLY_EXPANDED = "POSSIBLY_EXPANDED"; // 可能扩展（变化超出测量边界）
+    public static final String TRAJ_POSSIBLY_NEW = "POSSIBLY_NEW";           // 可能新发（前期有覆盖但无对应前身）
+    public static final String TRAJ_POSSIBLY_DISAPPEARED = "POSSIBLY_DISAPPEARED"; // 可能消失（后续有覆盖但无后继）
+    public static final String TRAJ_NOT_COMPARABLE = "NOT_COMPARABLE";       // 无法比较（缺覆盖/几何未映射/定位歧义）
+
+    // 轨迹连续性
+    public static final String CONT_CONTINUOUS = "CONTINUOUS";               // 相邻年份连续覆盖
+    public static final String CONT_COVERAGE_GAP = "COVERAGE_GAP";           // 中间年份无覆盖，不可宣称持续劣化
+    public static final String CONT_GEOMETRY_REMAPPED = "GEOMETRY_REMAPPED"; // 跨几何改造，经明确映射范围连接
+    public static final String CONT_SINGLE = "SINGLE_OBSERVATION";           // 仅一期观测，无相邻连接
+
+    // 不可比较原因
+    public static final String NC_COVERAGE_GAP = "COVERAGE_GAP_BETWEEN_OBSERVATIONS";
+    public static final String NC_NO_PRIOR_COVERAGE = "NO_PRIOR_COVERAGE_SCOPE";
+    public static final String NC_GEOMETRY_NOT_MAPPED = "GEOMETRY_NOT_MAPPED";
+    public static final String NC_POSITION_AMBIGUITY = "POSITION_UNCERTAINTY_AMBIGUOUS";
+    public static final String NC_CONTESTED = "OBSERVATION_CONTESTED";
+
+    // 变化判定（对原始判读的独立分析结论）
+    public static final String CHANGE_INCREASE = "SUPPORTED_INCREASE";       // 变化超出测量边界，支持扩展
+    public static final String CHANGE_DECREASE = "SUPPORTED_DECREASE";
+    public static final String CHANGE_WITHIN_BOUNDARY = "WITHIN_MEASUREMENT_BOUNDARY"; // 测量边界内，不足以宣称变化
+    public static final String CHANGE_INDETERMINATE = "INDETERMINATE";       // 不重叠/不确定
+
+    // 轨迹连接路线
+    public static final String LINK_RULE_BASED = "RULE_BASED";               // 相邻年份重叠+属性容差，逐段贪心
+    public static final String LINK_GLOBAL_CONSTRAINT = "GLOBAL_CONSTRAINT"; // 多期整体约束，全局最优轨迹集合
 }

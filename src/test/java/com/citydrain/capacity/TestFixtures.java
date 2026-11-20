@@ -1,7 +1,12 @@
 package com.citydrain.capacity;
 
+import com.citydrain.capacity.domain.DefectObservation;
+import com.citydrain.capacity.domain.GeometryMapping;
+import com.citydrain.capacity.domain.InspectionCoverage;
 import com.citydrain.capacity.domain.Observation;
 import com.citydrain.capacity.domain.ParamVersion;
+import com.citydrain.capacity.repo.DefectContextRepo;
+import com.citydrain.capacity.repo.DefectObservationRepo;
 import com.citydrain.capacity.repo.EventRepo;
 import com.citydrain.capacity.repo.ExternalRefRepo;
 import com.citydrain.capacity.repo.NetworkVersionRepo;
@@ -26,6 +31,8 @@ public class TestFixtures {
     @Autowired ObservationRepo obsRepo;
     @Autowired EventRepo eventRepo;
     @Autowired ExternalRefRepo extRepo;
+    @Autowired DefectObservationRepo defectRepo;
+    @Autowired DefectContextRepo contextRepo;
 
     public long nvId;
     public long segA;
@@ -34,6 +41,33 @@ public class TestFixtures {
 
     public static OffsetDateTime t(int y, int mo, int d, int h, int mi) {
         return OffsetDateTime.of(y, mo, d, h, mi, 0, 0, CST);
+    }
+
+    // ------------------------------------------------------------- 缺陷演化夹具
+
+    /** 新建一条独立缺陷演化管段，避免与种子/其它测试碰撞（每次独立网络版本，避免跨事务复用已回滚的 nvId）。 */
+    public long defectSegment(String code) {
+        long defNv = nvRepo.insert("NV-DEFECT-" + code + "-" + System.nanoTime(), "缺陷演化测试网络");
+        return segmentRepo.insert(defNv, code, "DN-" + code, "DN-" + code + "-N", 120, 1000,
+                11.0, 10.8, 600);
+    }
+
+    public long dObs(long segmentId, String geo, String code, int year, double s, double e,
+                     double lenMin, double lenMax, double posUnc) {
+        return defectRepo.insert(new DefectObservation(0, segmentId, geo, code, "裂缝",
+                t(year, 5, 10, 10, 0), s, e, lenMin, lenMax, 0.3, 0.5, 4.0, posUnc,
+                "CCTV", "V" + year, null, t(year, 5, 13, 9, 0)));
+    }
+
+    public long dCover(long segmentId, String geo, int year, double start, double end) {
+        return contextRepo.insertCoverage(new InspectionCoverage(0, segmentId, geo, year, start, end,
+                t(year, 5, 10, 10, 0), "INSPECTION", "Y" + year, t(year, 5, 10, 10, 0)));
+    }
+
+    public long dMapping(long segmentId, String from, String to,
+                         double fromStart, double fromEnd, double toStart, double toEnd) {
+        return contextRepo.insertMapping(new GeometryMapping(0, segmentId, from, to,
+                fromStart, fromEnd, toStart, toEnd, "test mapping", t(2026, 3, 1, 9, 0)));
     }
 
     /** 基础网络 + 参数版本（validFrom 2026-01-01，createdAt 2026-01-05）+ 事件。
